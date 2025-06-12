@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance']
 
     def update(self, instance, validated_data):
+        print(validated_data, "validated_data")
         instance = super().update(instance, validated_data)
         instance.updated_by = self.context["request"].user
         instance.save()

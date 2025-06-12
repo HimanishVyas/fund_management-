@@ -68,7 +68,7 @@ class LoginOrRegisterViewSet(viewsets.ModelViewSet):
         email = data.get('email')
         password = data.get('password')
         register_flag = data.pop('register_flag')
-        if register_flag is False:
+        if not register_flag:
             try:
                 user = get_user_model().objects.get(email=email)
                 if user.check_password(password):
