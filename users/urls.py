@@ -3,7 +3,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet,
-    LoginOrRegisterViewSet
+    LoginOrRegisterViewSet,
+    UpdateBalanceView
 )
 
 router = DefaultRouter()
@@ -12,4 +13,6 @@ router.register(r'login-or-register', LoginOrRegisterViewSet, basename='user-log
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('update-balance/', UpdateBalanceView.as_view(), name='update-balance'),
+
 ]

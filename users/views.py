@@ -1,5 +1,6 @@
 # users/views.py
-from django.contrib.auth.models import AnonymousUser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
@@ -9,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+
 from .serializers import (
     UserSerializer,
     LoginOrRegisterUserSerializer
@@ -98,3 +100,16 @@ class LoginOrRegisterViewSet(viewsets.ModelViewSet):
             response_data,
             status=status_a,
         )
+
+
+class UpdateBalanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        data = request.data
+        data['updated_by'] = request.user
+        serializer = UserSerializer(data, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'balance': serializer.data['balance']})
+        return Response(serializer.errors, status=400)

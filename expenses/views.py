@@ -46,13 +46,28 @@ class TransactionViewSet(viewsets.ModelViewSet):
             data = request.data
             user = request.user
             data['user'] = user.id
+            if data.get('operation'):
+                response_data = {
+                    "error": f"error: No operation Found, Must Add the Operation To Do",
+                }
+                return Response(
+                    response_data,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             serializer = TransactionSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
             # update user's Balance
             current_balance = user.balance
-            new_balance = current_balance - data.get('amount')
+            data = request.data
+            if data.get('operation') == 'debited':
+                new_balance = current_balance - data.get('amount')
+            elif data.get('operation') == 'credited':
+                new_balance = current_balance + data.get('amount')
+            else:
+                new_balance = user.balance
+
             user.balance = new_balance
             user.save()
 
